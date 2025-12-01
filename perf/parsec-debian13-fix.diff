@@ -1,0 +1,145 @@
+diff --git a/ext/splash2/apps/barnes/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/barnes/parsec/gcc-pthreads.bldconf
+index 0dcdd4fb..2a3f8ef1 100644
+--- a/ext/splash2/apps/barnes/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/barnes/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon "
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/fmm/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/fmm/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/fmm/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/fmm/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/ocean_cp/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/ocean_cp/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/ocean_cp/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/ocean_cp/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/ocean_ncp/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/ocean_ncp/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/ocean_ncp/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/ocean_ncp/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/radiosity/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/radiosity/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/radiosity/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/radiosity/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/raytrace/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/raytrace/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/raytrace/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/raytrace/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/volrend/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/volrend/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/volrend/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/volrend/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/water_nsquared/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/water_nsquared/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/water_nsquared/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/water_nsquared/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2/apps/water_spatial/parsec/gcc-pthreads.bldconf b/ext/splash2/apps/water_spatial/parsec/gcc-pthreads.bldconf
+index 73de1d29..2a3f8ef1 100644
+--- a/ext/splash2/apps/water_spatial/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2/apps/water_spatial/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps=""
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=IN_PARSEC CFLAGS=-fcommon"
++build_env="version=IN_PARSEC CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/ext/splash2x/apps/raytrace/parsec/gcc-pthreads.bldconf b/ext/splash2x/apps/raytrace/parsec/gcc-pthreads.bldconf
+index 431a8879..b2b599ca 100644
+--- a/ext/splash2x/apps/raytrace/parsec/gcc-pthreads.bldconf
++++ b/ext/splash2x/apps/raytrace/parsec/gcc-pthreads.bldconf
+@@ -18,7 +18,7 @@
+ build_deps="parmacs"
+ 
+ # Environment to use for configure script and Makefile
+-build_env="version=pthreads CFLAGS=-fcommon"
++build_env="version=pthreads CFLAGS=\"$CFLAGS -fcommon\""
+ 
+ # Whether the build system supports only in-place compilation.
+ # If TRUE, then all sources will be copied to the build directory before we
+diff --git a/pkgs/libs/uptcpip/src/Makefile.config b/pkgs/libs/uptcpip/src/Makefile.config
+index 71f8bc09..47ae415f 100755
+--- a/pkgs/libs/uptcpip/src/Makefile.config
++++ b/pkgs/libs/uptcpip/src/Makefile.config
+@@ -8,9 +8,7 @@ endif
+ ARCH = $(shell uname -i)
+ 
+ ifeq ($(ARCH), x86_64)
+-CFLAGS = -DX86_64 -D__LP64__
+-else
+-CFLAGS =  
++CFLAGS += -DX86_64 -D__LP64__
+ endif
+ 
+ 

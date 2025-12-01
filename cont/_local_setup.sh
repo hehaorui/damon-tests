@@ -64,6 +64,7 @@ checkout_git()
 }
 
 gh_upstream="https://github.com/damonitor"
+hehaorui_customize="https://github.com/hehaorui"
 
 if [ ! -d "$work_dir" ]
 then
@@ -84,7 +85,7 @@ checkout_git "$lazybox_path" "origin" "$lazybox_gh_repo" "origin/master"
 
 echo "setup damon-tests"
 damon_tests_path=$work_dir/damon-tests
-fetch_git "$damon_tests_path" "upstream" "$gh_upstream/damon-tests"
+fetch_git "$damon_tests_path" "upstream" "$hehaorui_customize/damon-tests"
 git -C "$damon_tests_path" checkout "$damon_tests_commit"
 
 echo "setup damo"
