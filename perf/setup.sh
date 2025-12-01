@@ -71,8 +71,10 @@ done
 echo "=== All subprojects processed ==="
 
 # apply patch to parsec
-git apply -p1 --3way $bindir/parsec3_fixes.patch || {
-	echo "[Error] applying parsec3_fixes.patch failed"
+parsec_patch_file=$repos_dir/damon-tests/perf/parsec-debian13-fix.diff
+
+git apply -p1 --3way $parsec_patch_file || {
+	echo "[Error] applying ${parsec_patch_file} failed"
 	exit 1
 }
 
