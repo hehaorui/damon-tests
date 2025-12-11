@@ -150,6 +150,36 @@ then
 		sleep 1
 	done
 	sudo "$DAMO" stop
+elif [[ "$var" == "my_prcl"* ]]
+then
+	scheme_name=$(echo "$var" | cut -d'_' -f1-3)
+	tune_target_metric=$(echo "$var" | cut -d'_' -f3)
+	tune_target_value=$(echo "$var" | cut -d'_' -f4)
+
+	if  [ "$tune_target_metric" = "rss" ]
+	then
+		if [ -f "$custom_schemes_dir/$scheme_name.json" ]
+		then
+			scheme="$custom_schemes_dir/$scheme_name.json"
+		elif [ -f "$custom_schemes_dir/$scheme_name.damos" ]
+		then
+			scheme="$custom_schemes_dir/$scheme_name.damos"
+		elif [ -f "$schemes_dir/$scheme_name.json" ]
+		then
+			scheme="$schemes_dir/$scheme_name.json"
+		else
+			scheme="$schemes_dir/$scheme_name.damos"
+		fi
+	else
+		echo "Unsupported tune target metric: $tune_target_metric"
+		killall $cmdname
+		exit 1
+	fi
+
+	echo "apply scheme '$scheme' with target $tune_target_metric=$tune_target_value"
+
+	sudo timeout "$timeout" "$DAMO" record "$pid" --schemes "$scheme" --out "$ODIR/damon.data"
+	sudo "$DAMO" stop
 else
 	echo "Wrong var $var"
 	killall $cmdname
