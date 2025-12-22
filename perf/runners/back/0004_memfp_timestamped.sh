@@ -17,14 +17,14 @@ fi
 
 while true;
 do
-	# Get current time since boot using Python high-precision timer
-	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
-	timestamp="[$timestamp_ns]"
-	
 	pid=`pidof $work`
 	if [ $pid ]
 	then
 		mem_info=$(ps -o vsz=,rss=,pid=,cmd= --pid `pidof $work`)
+		# Get current time since boot using Python high-precision timer
+		timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
+		timestamp="[$timestamp_ns]"
+	
 		echo "$timestamp $mem_info" >> $1/memfps_timestamped
 	fi
 	sleep 0.1

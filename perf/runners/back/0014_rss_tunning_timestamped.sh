@@ -42,9 +42,8 @@ goal_dir="$sysfs_dir/contexts/0/schemes/0/quotas/goals/0"
 while :;
 do
 	# Get current time since boot using Python high-precision timer
-	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
 	outfile="$odir/rss_tuning_timestamped"
-	logline="[$timestamp_ns]"
+	logline=""
 
 	pid=$(pidof $work)
 
@@ -72,6 +71,7 @@ do
 	else
 		logline+=" no_process_found"
 	fi
-		echo "$logline" >> "$outfile"
+		timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
+		echo "[$timestamp_ns]"+"$logline" >> "$outfile"
 		sleep 1
 done

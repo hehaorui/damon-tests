@@ -36,9 +36,8 @@ stats="nr_tried sz_tried nr_applied sz_applied qt_exceeds"
 while :;
 do
 	# Get current time since boot using Python high-precision timer
-	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
 	outfile="$odir/scheme_stats_timestamped"
-	logline="[$timestamp_ns]"
+	logline=""
 	if [ -d "$scheme_stat_dir" ]
 	then
 		echo update_schemes_stats | sudo tee "$sysfs_dir/state" > /dev/null
@@ -50,6 +49,7 @@ do
 	else
 		logline+=" wait for damon scheme directory"
 	fi
-		echo "$logline" >> "$outfile"
+		timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
+		echo "[$timestamp_ns]"+"$logline" >> "$outfile"
 		sleep 0.1
 done

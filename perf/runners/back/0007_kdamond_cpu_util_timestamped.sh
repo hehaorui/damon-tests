@@ -60,10 +60,6 @@ while [ -f "$kdamond_stat_file" ]
 do
 	sleep 0.1
 
-	# Get current time since boot using Python high-precision timer
-	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
-	timestamp="[$timestamp_ns]"
-
 	now_total_jiffies=$(cat /proc/timer_list | \
 		grep "^jiffies: " --max-count=1 | awk '{print $2}')
 	now_kdamond_jiffies=$(cat "$kdamond_stat_file" | awk '{print $15}')
@@ -76,6 +72,10 @@ do
 	kdamond_jiffies=$((now_kdamond_jiffies - start_kdamond_jiffies))
 	kdamond_util=$(echo "$kdamond_jiffies $total_jiffies" | \
 		awk '{print $1 / $2}')
+
+	# Get current time since boot using Python high-precision timer
+	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
+	timestamp="[$timestamp_ns]"
 
 	echo "$timestamp $kdamond_util $kdamond_jiffies $total_jiffies" >> \
 		"$cpu_usage_file"

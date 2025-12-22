@@ -29,11 +29,16 @@ rss_goals_KB="$((400*1024)) $((500*1024)) \
 							$((600*1024)) $((700*1024)) \
 							$((800*1024)) $((900*1024)) \
 							$((1000*1024))"
+
+cold_thresholds_ms="500 1000 1500 2000 2500 3000"
 vars=""
 
 for goal in $rss_goals_KB
 do
-	vars+="my_prcl_rss_$goal "
+	for cold_threshold in $cold_thresholds_ms
+	do
+		vars+="my_prcl_rss_${goal}_cold_${cold_threshold}ms "
+	done
 done
 
 # vars="prcl_auto_50"

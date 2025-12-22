@@ -152,23 +152,30 @@ then
 	sudo "$DAMO" stop
 elif [[ "$var" == "my_prcl"* ]]
 then
-	scheme_name=$(echo "$var" | cut -d'_' -f1-3)
+	scheme_prefix=$(echo "$var" | cut -d'_' -f1-3)
 	tune_target_metric=$(echo "$var" | cut -d'_' -f3)
 	tune_target_value=$(echo "$var" | cut -d'_' -f4)
+	# Extract cold_threshold and remove 'ms' suffix
+	cold_threshold_with_ms=$(echo "$var" | cut -d'_' -f6)
+	cold_threshold=${cold_threshold_with_ms%ms}
 
 	if  [ "$tune_target_metric" = "rss" ]
 	then
-		if [ -f "$custom_schemes_dir/$scheme_name.json" ]
+# Construct scheme filename based on cold_threshold (ms already included in the parameter)
+	scheme_filename="${scheme_prefix}_cold_${cold_threshold_with_ms}.json"
+		
+		# Try custom schemes directory first, then fall back to general schemes directory
+		if [ -f "$custom_schemes_dir/$scheme_filename" ]
 		then
-			scheme="$custom_schemes_dir/$scheme_name.json"
-		elif [ -f "$custom_schemes_dir/$scheme_name.damos" ]
+			scheme="$custom_schemes_dir/$scheme_filename"
+		elif [ -f "$schemes_dir/$scheme_filename" ]
 		then
-			scheme="$custom_schemes_dir/$scheme_name.damos"
-		elif [ -f "$schemes_dir/$scheme_name.json" ]
-		then
-			scheme="$schemes_dir/$scheme_name.json"
+			scheme="$schemes_dir/$scheme_filename"
 		else
-			scheme="$schemes_dir/$scheme_name.damos"
+			echo "Error: Scheme file not found: $scheme_filename"
+			echo "Checked in: $custom_schemes_dir/$scheme_filename and $schemes_dir/$scheme_filename"
+			killall $cmdname
+			exit 1
 		fi
 	else
 		echo "Unsupported tune target metric: $tune_target_metric"

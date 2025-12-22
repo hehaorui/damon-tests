@@ -17,10 +17,6 @@ fi
 
 while true;
 do
-	# Get current time since boot using Python high-precision timer
-	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
-	timestamp="[$timestamp_ns]"
-	
 	pid=`pidof $work`
 	if [ $pid ]
 	then
@@ -31,6 +27,10 @@ do
 		minflt=$(echo $stat_info | awk '{print $10}')
 		majflt=$(echo $stat_info | awk '{print $12}')
 		
+		# Get current time since boot using Python high-precision timer
+		timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
+		timestamp="[$timestamp_ns]"
+	
 		echo "$timestamp minflt: $minflt majflt: $majflt" >> "$1/process_fault_count_timestamped"
 	fi
 	sleep 0.1

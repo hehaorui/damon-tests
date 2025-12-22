@@ -36,9 +36,8 @@ state_file="$sysfs_dir/state"
 while :;
 do
 	# Get current time since boot using Python high-precision timer
-	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
 	outfile="$odir/scheme_quota_timestamped"
-	logline="[$timestamp_ns]"
+	logline=""
 	
 	if [ -f "$state_file" ]
 	then
@@ -63,6 +62,7 @@ do
 		logline+=" wait for damon state file"
 	fi
 	
-	echo "$logline" >> "$outfile"
+	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
+	echo "[$timestamp_ns]"+"$logline" >> "$outfile"
 	sleep 0.1
 done
