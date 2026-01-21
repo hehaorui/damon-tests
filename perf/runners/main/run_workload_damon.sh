@@ -159,10 +159,10 @@ then
 	cold_threshold_with_ms=$(echo "$var" | cut -d'_' -f6)
 	cold_threshold=${cold_threshold_with_ms%ms}
 
-	if  [ "$tune_target_metric" = "rss" ]
+	if  [ "$tune_target_metric" = "rss" ] || [ "$tune_target_metric" = "swaprate" ]
 	then
-# Construct scheme filename based on cold_threshold (ms already included in the parameter)
-	scheme_filename="${scheme_prefix}_cold_${cold_threshold_with_ms}.json"
+		# Construct scheme filename based on cold_threshold (ms already included in the parameter)
+		scheme_filename="${scheme_prefix}_cold_${cold_threshold_with_ms}.json"
 		
 		# Try custom schemes directory first, then fall back to general schemes directory
 		if [ -f "$custom_schemes_dir/$scheme_filename" ]

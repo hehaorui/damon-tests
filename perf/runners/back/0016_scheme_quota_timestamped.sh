@@ -51,18 +51,18 @@ do
 			effective_bytes=$(sudo cat "$scheme_quota_dir/effective_bytes" 2>/dev/null)
 			if [ -n "$effective_bytes" ]
 			then
-				logline+=" effective_bytes:$effective_bytes"
+				logline+="effective_bytes:$effective_bytes"
 			else
-				logline+=" effective_bytes:NA"
+				logline+="effective_bytes:NA"
 			fi
 		else
-			logline+=" wait for damon scheme quota directory"
+			logline+="wait for damon scheme quota directory"
 		fi
 	else
-		logline+=" wait for damon state file"
+		logline+="wait for damon state file"
 	fi
 	
 	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
-	echo "[$timestamp_ns]"+"$logline" >> "$outfile"
+	echo "[$timestamp_ns] $logline" >> "$outfile"
 	sleep 0.1
 done

@@ -44,12 +44,12 @@ do
 		for s in $stats
 		do
 			val=$(sudo cat "$scheme_stat_dir/$s")
-			logline+=" $s:$val"
+			logline+="$s:$val"
 		done
 	else
-		logline+=" wait for damon scheme directory"
+		logline+="wait for damon scheme directory"
 	fi
 		timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")
-		echo "[$timestamp_ns]"+"$logline" >> "$outfile"
+		echo "[$timestamp_ns] $logline" >> "$outfile"
 		sleep 0.1
 done

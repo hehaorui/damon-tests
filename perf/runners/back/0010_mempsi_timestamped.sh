@@ -2,7 +2,7 @@
 
 while :
 do
-	psi_mem_info=$(cat /proc/pressure/memory)
+	psi_mem_info=$(cat /proc/pressure/memory | xargs) # put the result in one line
 	
 	# Get current time since boot using Python high-precision timer
 	timestamp_ns=$(python3 -c "import time; print(time.clock_gettime_ns(time.CLOCK_BOOTTIME))")

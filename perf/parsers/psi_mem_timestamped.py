@@ -14,6 +14,7 @@ def parse_timestamped_file(input_file, output_file):
     """
     data = []
     previous_psi_some = None
+    previous_psi_full = None
     
     try:
         with open(input_file, 'r') as f:
@@ -22,11 +23,7 @@ def parse_timestamped_file(input_file, output_file):
                 if not line:
                     continue
                 
-                # Parse line format: [timestamp_ns] psi_mem_info...
-                # PSI memory format typically contains:
-                # some avg10=0.00 avg60=0.00 avg300=0.00 total=0
-                # full avg10=0.00 avg60=0.00 avg300=0.00 total=0
-                
+                # Parse line format: [timestamp_ns] some ... full ...
                 # Extract timestamp
                 timestamp_match = re.match(r'\[(\d+)\]\s+(.+)', line)
                 if not timestamp_match:
@@ -39,7 +36,7 @@ def parse_timestamped_file(input_file, output_file):
                 psi_data = {'timestamp_ns': timestamp_ns}
                 
                 # Parse some pressure (memory stalls)
-                some_match = re.search(r'some\s+avg10=(\d+\.\d+)\s+avg60=(\d+\.\d+)\s+avg300=(\d+\.\d+)\s+total=(\d+)', psi_info)
+                some_match = re.search(r'some\s+avg10=([\d.]+)\s+avg60=([\d.]+)\s+avg300=([\d.]+)\s+total=(\d+)', psi_info)
                 if some_match:
                     some_total = int(some_match.group(4))
                     psi_data['some_avg10'] = some_match.group(1)
@@ -50,27 +47,33 @@ def parse_timestamped_file(input_file, output_file):
                     # Calculate incremental some_total
                     if previous_psi_some is not None:
                         incremental_some = some_total - previous_psi_some
-                        # Handle potential counter resets or negative values
                         if incremental_some < 0:
                             incremental_some = some_total
                     else:
-                        # First data point, skip it
                         incremental_some = None
                     
                     previous_psi_some = some_total
-                    
-                    if incremental_some is not None:
-                        psi_data['some_increment'] = str(incremental_some)
-                    else:
-                        psi_data['some_increment'] = ''
+                    psi_data['some_increment'] = str(incremental_some) if incremental_some is not None else ''
                 
                 # Parse full pressure (memory stalls)
-                full_match = re.search(r'full\s+avg10=(\d+\.\d+)\s+avg60=(\d+\.\d+)\s+avg300=(\d+\.\d+)\s+total=(\d+)', psi_info)
+                full_match = re.search(r'full\s+avg10=([\d.]+)\s+avg60=([\d.]+)\s+avg300=([\d.]+)\s+total=(\d+)', psi_info)
                 if full_match:
+                    full_total = int(full_match.group(4))
                     psi_data['full_avg10'] = full_match.group(1)
                     psi_data['full_avg60'] = full_match.group(2)
                     psi_data['full_avg300'] = full_match.group(3)
                     psi_data['full_total'] = full_match.group(4)
+
+                    # Calculate incremental full_total
+                    if previous_psi_full is not None:
+                        incremental_full = full_total - previous_psi_full
+                        if incremental_full < 0:
+                            incremental_full = full_total
+                    else:
+                        incremental_full = None
+                    
+                    previous_psi_full = full_total
+                    psi_data['full_increment'] = str(incremental_full) if incremental_full is not None else ''
                 
                 # Only add if we found some pressure data
                 if 'some_avg10' in psi_data:
@@ -87,21 +90,15 @@ def parse_timestamped_file(input_file, output_file):
     try:
         with open(output_file, 'w') as f:
             # Write CSV header
-            f.write("timestamp_ns,some_avg10,some_avg60,some_avg300,some_total,some_increment,full_avg10,full_avg60,full_avg300,full_total\n")
+            f.write("timestamp_ns,some_avg10,some_avg60,some_avg300,some_total,some_increment,full_avg10,full_avg60,full_avg300,full_total,full_increment\n")
             
             # Write data rows
             for row in data:
-                some_avg10 = row.get('some_avg10', '')
-                some_avg60 = row.get('some_avg60', '')
-                some_avg300 = row.get('some_avg300', '')
-                some_total = row.get('some_total', '')
-                some_increment = row.get('some_increment', '')
-                full_avg10 = row.get('full_avg10', '')
-                full_avg60 = row.get('full_avg60', '')
-                full_avg300 = row.get('full_avg300', '')
-                full_total = row.get('full_total', '')
-                
-                f.write(f"{row['timestamp_ns']},{some_avg10},{some_avg60},{some_avg300},{some_total},{some_increment},{full_avg10},{full_avg60},{full_avg300},{full_total}\n")
+                f.write(f"{row['timestamp_ns']},"
+                        f"{row.get('some_avg10', '')},{row.get('some_avg60', '')},{row.get('some_avg300', '')},"
+                        f"{row.get('some_total', '')},{row.get('some_increment', '')},"
+                        f"{row.get('full_avg10', '')},{row.get('full_avg60', '')},{row.get('full_avg300', '')},"
+                        f"{row.get('full_total', '')},{row.get('full_increment', '')}\n")
         
         print(f"Successfully converted {len(data)} records to '{output_file}'")
         return 0

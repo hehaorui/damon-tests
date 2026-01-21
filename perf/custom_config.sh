@@ -25,12 +25,15 @@ do
 done
 
 # vars="orig rec prec thp ethp prcl_auto_50 pdarc_v4_2_2 ttmo plrus_auto_7000"
-rss_goals_KB="$((400*1024)) $((500*1024)) \
-							$((600*1024)) $((700*1024)) \
-							$((800*1024)) $((900*1024)) \
-							$((1000*1024))"
+# rss_goals_KB="$((400*1024)) $((500*1024)) \
+# 							$((600*1024)) $((700*1024)) \
+# 							$((800*1024)) $((900*1024)) \
+# 							$((1000*1024))"
 
-cold_thresholds_ms="500 1000 1500 2000 2500 3000"
+# the rate is calculated by (swapped_bytes)/(rss_bytes + swapped_bytes) * 100%
+swaprate_goals_percents="10 15 20"
+
+cold_thresholds_ms="500 1500 2500"
 vars=""
 
 for goal in $rss_goals_KB
@@ -38,6 +41,14 @@ do
 	for cold_threshold in $cold_thresholds_ms
 	do
 		vars+="my_prcl_rss_${goal}_cold_${cold_threshold}ms "
+	done
+done
+
+for goal in $swaprate_goals_percents
+do
+	for cold_threshold in $cold_thresholds_ms
+	do
+		vars+="my_prcl_swaprate_${goal}_cold_${cold_threshold}ms "
 	done
 done
 
