@@ -84,8 +84,9 @@ sudo apt install -y texinfo
 bash -c '
 	source env.sh &&
 	env \
-		CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types -Wno-implicit-function-declaration -Wno-error=int-conversion -Wno-error=implicit-int" \
-		CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types" \
+		CFLAGS="$CFLAGS -Wno-error=incompatible-pointer-types -Wno-implicit-function-declaration \
+		-Wno-error=int-conversion -Wno-error=implicit-int -Wno-return-mismatch" \
+		CXXFLAGS="$CXXFLAGS -Wno-error=incompatible-pointer-types -Wno-return-mismatch" \
 		parsecmgmt -a build
 '
 
