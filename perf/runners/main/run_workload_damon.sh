@@ -16,6 +16,11 @@ fi
 BINDIR=$(dirname "$0")
 ODIR=$1
 
+# Create an empty pseudo file to ensure parsers/statists can execute
+touch "$ODIR/integrated_data"
+echo "This is a pseudo file for enabling parsing and statistics processing." \
+  > "$ODIR/integrated_data"
+
 repos_dir="$(dirname "$0")/../../../../"
 PARSEC_BENCHMARK="$repos_dir/parsec-benchmark"
 SILO_DBTEST="$repos_dir/silo/out-perf.masstree/benchmarks/dbtest"
