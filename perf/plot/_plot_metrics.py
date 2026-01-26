@@ -936,6 +936,222 @@ def plot_psi_majflt(all_data: Dict[str, Dict[str, pd.DataFrame]],
     plt.close()
 
 
+def plot_timeseries_for_run(variant_name: str, category: str, workload: str, variant: str,
+                              run_num: str, output_path: str) -> None:
+    """
+    Plot time series data for a single run from integrated_data.csv.
+    Creates a multi-panel plot showing various metrics over time.
+    """
+    # Build path to integrated_data.csv
+    run_path = os.path.join('/home/andy/workspaces/damon-tests/perf/results-collect',
+                           category, workload, variant, run_num, 'parsed', 'integrated_data.csv')
+    
+    if not os.path.exists(run_path):
+        print(f"Warning: {run_path} not found, skipping")
+        return
+    
+    df = pd.read_csv(run_path)
+    
+    # Get timestamp column
+    timestamps = df['timestamp_ms'].values / 1000  # Convert to seconds
+    
+    # Create a 12x1 subplot grid (vertical layout)
+    fig, axes = plt.subplots(12, 1, figsize=(12, 24), sharex=True)
+    fig.suptitle(f'{variant_name} - Run {run_num} Time Series Metrics', fontsize=14, fontweight='bold', y=0.999)
+    plt.subplots_adjust(top=0.985, hspace=0.35)
+    
+    # Panel 1: PSI metrics (row 0)
+    ax = axes[0]
+    psi_some = df['psi_mem_timestamped_some_increment'].values
+    psi_full = df['psi_mem_timestamped_full_increment'].values if 'psi_mem_timestamped_full_increment' in df.columns else None
+    ax.plot(timestamps, psi_some, label='PSI some', color='#1976D2', linewidth=1.5)
+    if psi_full is not None:
+        ax.plot(timestamps, psi_full, label='PSI full', color='#FF5722', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('PSI (ms)')
+    ax.set_title('Pressure Stall Information')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 2: Swaprate and goal (row 1)
+    ax = axes[1]
+    swaprate = df['swaprate_tuning_timestamped_swaprate_bp'].values
+    swaprate_goal = df['swaprate_tuning_timestamped_swaprate_goal_bp'].values
+    ax.plot(timestamps, swaprate, label='Swaprate', color='#F44336', linewidth=1.5)
+    ax.plot(timestamps, swaprate_goal, label='Swaprate Goal', color='#FF9800', linestyle='--', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Swaprate (bp)')
+    ax.set_title('Swaprate and Target')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 3: Page faults (row 2)
+    ax = axes[2]
+    majflt = df['process_fault_count_timestamped.diff_majflt_count'].values
+    minflt = df['process_fault_count_timestamped.diff_minflt_count'].values
+    ax.plot(timestamps, majflt, label='Major faults', color='#E91E63', linewidth=1.5)
+    ax.plot(timestamps, minflt, label='Minor faults', color='#FFC107', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Faults (count)')
+    ax.set_title('Page Faults')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 4: kdamond CPU usage (row 3)
+    ax = axes[3]
+    kdamond_cpu = df['kdamond_cpu_usage_timestamped_kdamond_cpu_util'].values
+    ax.plot(timestamps, kdamond_cpu * 100, color='#795548', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('CPU Usage (%)')
+    ax.set_title('kdamond CPU Usage')
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 5: Swap in/out (row 4)
+    ax = axes[4]
+    pswpin = df['pswpin_timestamped.diff_pswpin_pages'].values
+    pswpout = df['pswpout_timestamped.diff_pswpout_pages'].values
+    ax.plot(timestamps, pswpin, label='Swap in', color='#4CAF50', linewidth=1.5)
+    ax.plot(timestamps, pswpout, label='Swap out', color='#E91E63', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Pages')
+    ax.set_title('Swap Activity')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 6: Scheme quota (row 5)
+    ax = axes[5]
+    if 'scheme_quota_timestamped_effective_bytes' in df.columns:
+        quota = df['scheme_quota_timestamped_effective_bytes'].values
+        quota_mb = quota / (1024 * 1024)  # Convert to MB
+        ax.plot(timestamps, quota_mb, color='#827717', linewidth=1.5)
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Quota (MB)')
+        ax.set_title('Scheme Quota')
+        ax.grid(True, alpha=0.3)
+    else:
+        ax.text(0.5, 0.5, 'No data', ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('Scheme Quota')
+    
+    # Panel 7: Scheme stats - counts (row 6)
+    ax = axes[6]
+    nr_tried = df['scheme_stats_timestamped.diff_nr_tried'].values
+    nr_applied = df['scheme_stats_timestamped.diff_nr_applied'].values
+    ax.plot(timestamps, nr_tried, label='Tried', color='#1565C0', linewidth=1.5)
+    ax.plot(timestamps, nr_applied, label='Applied', color='#7B1FA2', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Count')
+    ax.set_title('Scheme Stats - Regions')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 8: Scheme stats - sizes (row 7)
+    ax = axes[7]
+    sz_tried = df['scheme_stats_timestamped.diff_sz_tried'].values
+    sz_applied = df['scheme_stats_timestamped.diff_sz_applied'].values
+    sz_tried_mb = sz_tried / (1024 * 1024)
+    sz_applied_mb = sz_applied / (1024 * 1024)
+    ax.plot(timestamps, sz_tried_mb, label='Tried', color='#009688', linewidth=1.5)
+    ax.plot(timestamps, sz_applied_mb, label='Applied', color='#F57C00', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Size (MB)')
+    ax.set_title('Scheme Stats - Sizes')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 9: Scheme stats - quota exceeds (row 8)
+    ax = axes[8]
+    qt_exceeds = df['scheme_stats_timestamped.diff_qt_exceeds'].values
+    ax.plot(timestamps, qt_exceeds, color='#B71C1C', linewidth=1.5)
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Count')
+    ax.set_title('Quota Exceeds')
+    ax.grid(True, alpha=0.3)
+    
+    # Panel 10: Memory info (row 9)
+    ax = axes[9]
+    if 'memfree_timestamped_MemFree_kB' in df.columns:
+        memfree = df['memfree_timestamped_MemFree_kB'].values / 1024  # Convert to MB
+        ax.plot(timestamps, memfree, color='#607D8B', linewidth=1.5)
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Memory (MB)')
+        ax.set_title('Free Memory')
+        ax.grid(True, alpha=0.3)
+    else:
+        ax.text(0.5, 0.5, 'No data', ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('Free Memory')
+    
+    # Panel 11: RSS (row 10)
+    ax = axes[10]
+    if 'rss_tuning_timestamped_rss_KB' in df.columns:
+        rss = df['rss_tuning_timestamped_rss_KB'].values / 1024  # Convert to MB
+        rss_goal = df['rss_tuning_timestamped_rss_goal_KB'].values / 1024 if 'rss_tuning_timestamped_rss_goal_KB' in df.columns else None
+        ax.plot(timestamps, rss, label='RSS', color='#673AB7', linewidth=1.5)
+        if rss_goal is not None:
+            ax.plot(timestamps, rss_goal, label='RSS Goal', color='#9C27B0', linestyle='--', linewidth=1.5)
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('RSS (MB)')
+        ax.set_title('RSS and Goal')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+    else:
+        ax.text(0.5, 0.5, 'No data', ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('RSS and Goal')
+    
+    # Panel 12: Page faults total (row 11)
+    ax = axes[11]
+    if 'pgmajfaults_timestamped.diff_pgmajfaults_count' in df.columns:
+        pgmajfaults = df['pgmajfaults_timestamped.diff_pgmajfaults_count'].values
+        ax.plot(timestamps, pgmajfaults, color='#C62828', linewidth=1.5)
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Count')
+        ax.set_title('System Major Faults')
+        ax.grid(True, alpha=0.3)
+    else:
+        ax.text(0.5, 0.5, 'No data', ha='center', va='center', transform=ax.transAxes)
+        ax.set_title('System Major Faults')
+    
+    plt.tight_layout()
+    
+    # Save the plot
+    safe_name = variant_name.replace('/', '_')
+    output_file = os.path.join(output_path, f'{safe_name}_run_{run_num}_timeseries.png')
+    plt.savefig(output_file, dpi=150, bbox_inches='tight')
+    plt.close()
+    print(f"Saved time series plot for {variant_name} run {run_num} to {output_file}")
+
+
+def plot_all_runs_timeseries(results_base: str, output_path: str) -> None:
+    """
+    Plot time series data for the first run of each variant.
+    Only the first run of each workload/variant combination is plotted.
+    """
+    print("\n=== Plotting Time Series for First Run of Each Variant ===")
+    
+    # Find all category/workload/variant combinations
+    combinations = find_workloads_and_variants(results_base)
+    
+    # Iterate through all category/workload/variant combinations
+    for category, workload, variant in combinations:
+        variant_name = f"{category}/{workload}/{variant}"
+        
+        # Find all runs for this variant
+        variant_path = os.path.join(results_base, category, workload, variant)
+        
+        if not os.path.exists(variant_path):
+            continue
+        
+        # Get all run directories (01, 02, etc.) and sort them
+        run_dirs = [d for d in os.listdir(variant_path) 
+                    if os.path.isdir(os.path.join(variant_path, d)) 
+                    and d.isdigit()]
+        run_dirs.sort()
+        
+        # Only plot time series for the first run
+        if run_dirs:
+            plot_timeseries_for_run(variant_name, category, workload, variant, 
+                                   run_dirs[0], output_path)
+
+
 def main():
     """Main entry point for the script."""
     if len(sys.argv) < 2:
@@ -998,6 +1214,9 @@ def main():
     # Create PSI vs majflt scatter plot from parsed/integrated_data.csv
     plot_psi_majflt(all_data, results_base,
                    os.path.join(analyze_dir, 'psi_majflt.png'))
+
+    # Create time series plots for all runs
+    plot_all_runs_timeseries(results_base, analyze_dir)
 
 
 if __name__ == "__main__":
